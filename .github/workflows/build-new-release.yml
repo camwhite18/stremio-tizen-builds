@@ -26,6 +26,9 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: write
+
 env:
   TIZEN_STUDIO_VER: 4.5.1
 
@@ -142,7 +145,7 @@ jobs:
         if: ${{ matrix.source_build == true }}
         run: |
           cd stremio-web
-          pnpm install --frozen-lockfile
+          pnpm install --no-frozen-lockfile
           pnpm run build
           echo "BUILD_DIR=$(ls -d ${GITHUB_WORKSPACE}/stremio-web/build ${GITHUB_WORKSPACE}/stremio-web/dist 2>/dev/null | head -1)" >> $GITHUB_ENV
 
