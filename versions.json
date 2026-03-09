@@ -1,23 +1,23 @@
 {
   "stable": {
-    "stremio_web_version": "",
-    "stremio_web_commit": "",
-    "built_at": ""
+    "stremio_web_version": "v5.0.0-beta.31",
+    "stremio_web_commit": "v5.0.0-beta.31",
+    "built_at": "2026-03-09T11:13:22Z"
   },
   "main": {
     "stremio_web_version": "",
-    "stremio_web_commit": "",
-    "built_at": ""
+    "stremio_web_commit": "bab59bc06194",
+    "built_at": "2026-03-09T11:13:22Z"
   },
   "secondary": {
-    "stremio_web_version": "",
+    "stremio_web_version": "v5.0.0-beta.31",
     "stremio_web_commit": "",
-    "built_at": ""
+    "built_at": "2026-03-09T11:13:22Z"
   },
   "web-wrapper": {
-    "built_at": ""
+    "built_at": "2026-03-09T11:13:22Z"
   },
   "legacy": {
-    "built_at": ""
+    "built_at": "2026-03-09T11:13:22Z"
   }
 }
