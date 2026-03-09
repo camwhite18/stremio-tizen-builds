@@ -1,0 +1,49 @@
+{
+  "versions": {
+    "stable": {
+      "name": "Stremio",
+      "description": "Built with the latest stable release of stremio-web",
+      "repo": "Stremio/stremio-web",
+      "ref": "latest-release",
+      "tizen_template": "standard",
+      "app_id": "S2Stremio.Stremio",
+      "package_id": "S2Stremio"
+    },
+    "main": {
+      "name": "Stremio-main",
+      "description": "Built from the latest main branch (bleeding edge, may be unstable)",
+      "repo": "Stremio/stremio-web",
+      "ref": "main",
+      "tizen_template": "standard",
+      "app_id": "S2Stremio.Stremio",
+      "package_id": "S2Stremio"
+    },
+    "secondary": {
+      "name": "Stremio-secondary",
+      "description": "Same as stable but with a different app ID for dual installs",
+      "repo": "Stremio/stremio-web",
+      "ref": "latest-release",
+      "tizen_template": "secondary",
+      "app_id": "S2Strem2.Stremio2",
+      "package_id": "S2Strem2"
+    },
+    "web-wrapper": {
+      "name": "Stremio-WebWrapper",
+      "description": "Lightweight iframe wrapper pointing to Stremio's hosted web app (no build needed)",
+      "repo": null,
+      "ref": null,
+      "tizen_template": "web-wrapper",
+      "app_id": "S2StrWWr.StremioWW",
+      "package_id": "S2StrWWr"
+    },
+    "legacy": {
+      "name": "Stremio-Legacy",
+      "description": "Web wrapper targeting older shell URL for Tizen 2.x-4.x TVs (2015-2018)",
+      "repo": null,
+      "ref": null,
+      "tizen_template": "legacy-wrapper",
+      "app_id": "S2StrLeg.StremioLg",
+      "package_id": "S2StrLeg"
+    }
+  }
+}

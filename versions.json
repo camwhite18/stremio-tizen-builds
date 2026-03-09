@@ -1,0 +1,23 @@
+{
+  "stable": {
+    "stremio_web_version": "",
+    "stremio_web_commit": "",
+    "built_at": ""
+  },
+  "main": {
+    "stremio_web_version": "",
+    "stremio_web_commit": "",
+    "built_at": ""
+  },
+  "secondary": {
+    "stremio_web_version": "",
+    "stremio_web_commit": "",
+    "built_at": ""
+  },
+  "web-wrapper": {
+    "built_at": ""
+  },
+  "legacy": {
+    "built_at": ""
+  }
+}
