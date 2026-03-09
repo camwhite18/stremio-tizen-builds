@@ -1,3 +1,60 @@
 {
-  "include": []
+  "include": [
+    {
+      "tag": "v5.0.0-beta.31",
+      "repository": "Stremio/stremio-web",
+      "artifact_name": "Stremio",
+      "tizen_template": "standard",
+      "app_id": "StrTzBuild.Stremio",
+      "package_id": "StrTzBuild",
+      "source_build": true
+    },
+    {
+      "tag": "main",
+      "repository": "Stremio/stremio-web",
+      "artifact_name": "Stremio-main",
+      "tizen_template": "standard",
+      "app_id": "StrTzBuild.Stremio",
+      "package_id": "StrTzBuild",
+      "source_build": true
+    },
+    {
+      "tag": "v5.0.0-beta.31",
+      "repository": "Stremio/stremio-web",
+      "artifact_name": "Stremio-secondary",
+      "tizen_template": "secondary",
+      "app_id": "StrTzBuil2.Stremio2",
+      "package_id": "StrTzBuil2",
+      "source_build": true,
+      "secondary": true
+    },
+    {
+      "tag": "main",
+      "repository": "Stremio/stremio-web",
+      "artifact_name": "Stremio-main-secondary",
+      "tizen_template": "secondary",
+      "app_id": "StrTzBuil2.Stremio2",
+      "package_id": "StrTzBuil2",
+      "source_build": true,
+      "secondary": true
+    },
+    {
+      "artifact_name": "Stremio-WebWrapper",
+      "tizen_template": "web-wrapper",
+      "app_id": "StrTzWWrap.StremioWW",
+      "package_id": "StrTzWWrap",
+      "source_build": false,
+      "tag": "",
+      "repository": ""
+    },
+    {
+      "artifact_name": "Stremio-Legacy",
+      "tizen_template": "legacy-wrapper",
+      "app_id": "StrTzLegcy.StremioLg",
+      "package_id": "StrTzLegcy",
+      "source_build": false,
+      "tag": "",
+      "repository": ""
+    }
+  ]
 }
