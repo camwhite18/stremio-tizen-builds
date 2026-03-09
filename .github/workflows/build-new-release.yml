@@ -115,7 +115,8 @@ jobs:
             -subj "/CN=Stremio Tizen Build"
           openssl pkcs12 -export -out tizencert.p12 \
             -inkey tizen-key.pem -in tizen-cert.pem \
-            -password pass:1234
+            -password pass:1234 \
+            -certpbe PBE-SHA1-3DES -keypbe PBE-SHA1-3DES -macalg SHA1
 
       - name: Prepare Tizen Certificate
         run: |

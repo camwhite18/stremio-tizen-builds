@@ -2,7 +2,7 @@
 
 The purpose of this repository is to **automatically build the most up-to-date version** of Stremio for Samsung Tizen TVs.
 
-Every 6 hours, a GitHub Actions workflow checks the upstream [Stremio/stremio-web](https://github.com/Stremio/stremio-web) repository for new releases and commits. When changes are detected, it builds fresh `.wgt` packages and publishes them as a [GitHub Release](../../releases).
+Every hour, a GitHub Actions workflow checks the upstream [Stremio/stremio-web](https://github.com/Stremio/stremio-web) repository for new releases and commits. When changes are detected, it builds fresh `.wgt` packages and publishes them as a [GitHub Release](../../releases).
 
 > Inspired by [jeppevinkel/jellyfin-tizen-builds](https://github.com/jeppevinkel/jellyfin-tizen-builds), which does the same for Jellyfin.
 
@@ -17,6 +17,7 @@ Each release includes multiple `.wgt` variants:
 | `Stremio.wgt` | Built with the latest **stable release** of stremio-web |
 | `Stremio-main.wgt` | Built from the latest **main branch** (bleeding edge, may be unstable) |
 | `Stremio-secondary.wgt` | Stable build with a **different app ID** — allows having two Stremio installs with separate accounts |
+| `Stremio-main-secondary.wgt` | Main branch build with a **different app ID** for dual installs |
 | `Stremio-WebWrapper.wgt` | Lightweight **iframe wrapper** pointing to Stremio's hosted web app (no build step, always up to date) |
 | `Stremio-Legacy.wgt` | Web wrapper targeting older Stremio URL for **Tizen 2.x–4.x TVs** (2015–2018 models) |
 
@@ -63,7 +64,7 @@ It downloads builds from this repository and installs them on your TV with a few
    ```bash
    # Find SDB in your Tizen Studio installation
    ~/tizen-studio/tools/sdb connect <TV_IP_ADDRESS>
-   
+
    # Verify connection
    ~/tizen-studio/tools/sdb devices
    ```
@@ -118,53 +119,63 @@ This is a **known Tizen bug** — the install command reports failure even when 
 
 ## How the Build Pipeline Works
 
+The build system uses two workflows connected in a pipeline, modeled after [jellyfin-tizen-builds](https://github.com/jeppevinkel/jellyfin-tizen-builds):
+
+### 1. Get Latest Versions (hourly)
+
+Runs every hour (and on push to main). Checks the GitHub API for new commits and releases on [Stremio/stremio-web](https://github.com/Stremio/stremio-web). If changes are found, it updates `versions.json`, regenerates `matrix.json`, commits both, and triggers the build workflow.
+
+### 2. Build New Release (triggered by above, or manually)
+
+Uses a **matrix strategy** to build all variants in **parallel**:
+
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  GitHub Actions (every 6 hours or on push / manual trigger) │
-└────────────────────────┬────────────────────────────────────┘
-                         │
-                   ┌─────▼──────┐
-                   │ Check for  │
-                   │ upstream   │──── No changes ──→ Skip
-                   │ changes    │
-                   └─────┬──────┘
-                         │ Changes detected
-                         ▼
-            ┌────────────────────────────┐
-            │ For each variant in        │
-            │ matrix.json:               │
-            │                            │
-            │  Source builds:            │
-            │   1. Clone stremio-web     │
-            │   2. npm ci && npm build   │
-            │   3. Apply patches         │
-            │   4. Inject Tizen config   │
-            │   5. Package as .wgt       │
-            │                            │
-            │  Wrapper builds:           │
-            │   1. Generate config.xml   │
-            │   2. Generate index.html   │
-            │   3. Package as .wgt       │
-            └────────────┬───────────────┘
-                         │
-                   ┌─────▼──────┐
-                   │ Create     │
-                   │ GitHub     │
-                   │ Release    │
-                   └─────┬──────┘
-                         │
-                   ┌─────▼──────┐
-                   │ Update     │
-                   │ versions   │
-                   │ .json      │
-                   └────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│  Get Latest Versions (hourly / on push / manual)             │
+│  → checks upstream for new commits/releases                  │
+│  → updates versions.json & matrix.json                       │
+│  → triggers Build New Release if changes found               │
+└─────────────────────────┬────────────────────────────────────┘
+                          │
+┌─────────────────────────▼────────────────────────────────────┐
+│  Build New Release (matrix strategy — parallel jobs)         │
+│                                                              │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐         │
+│  │ Stremio      │ │ Stremio-main │ │ Stremio-     │  ...    │
+│  │ (stable)     │ │ (bleeding    │ │ secondary    │         │
+│  │              │ │  edge)       │ │              │         │
+│  └──────┬───────┘ └──────┬───────┘ └──────┬───────┘         │
+│         │                │                │                  │
+│  Each job:                                                   │
+│   1. Install Tizen Studio CLI                                │
+│   2. Generate signing certificate                            │
+│   3. Clone stremio-web (source builds only)                  │
+│   4. npm ci && npm build (source builds only)                │
+│   5. Apply Tizen config template                             │
+│   6. tizen build-web && tizen package                        │
+│   7. Upload .wgt artifact                                    │
+│                                                              │
+│  ┌──────────────────────────────────────────────────┐        │
+│  │ Release job: collect all artifacts → GitHub Release│       │
+│  └──────────────────────────────────────────────────┘        │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Manually triggering a build
+
+From the GitHub Actions UI: **Actions** → **Build New Release** → **Run workflow**.
+
+Or via the GitHub CLI:
+
+```bash
+gh workflow run build-new-release.yml
 ```
 
 ### Adding a new variant
 
-1. Add an entry to `matrix.json`
+1. Add variation entries to `matrix-definition.json` (for source build variations) or add wrapper entries for non-source builds
 2. Create a config template in `tizen/templates/` if needed
-3. Push to `main` — the workflow will pick it up automatically
+3. Push to `main` — the update-check workflow will regenerate `matrix.json` automatically
 
 ### Applying patches
 
@@ -177,27 +188,31 @@ Drop `.patch` files into `patches/stremio-web/` and they will be applied to the 
 ```
 stremio-tizen-builds/
 ├── .github/
+│   ├── dependabot.yaml                # Weekly GitHub Actions dependency updates
 │   └── workflows/
-│       └── build.yml              # Main CI: check → build → release
+│       ├── get-latest-versions.yml    # Hourly check → update versions → trigger build
+│       └── build-new-release.yml      # Matrix build → package .wgt → GitHub Release
 ├── scripts/
-│   ├── build-all.sh               # Builds all .wgt variants
-│   └── check-updates.sh           # Checks if upstream has new changes
+│   ├── build-all.sh                   # Local build script (not used in CI)
+│   └── check-updates.sh              # Checks upstream, updates versions & matrix
 ├── tizen/
 │   ├── icons/
-│   │   └── icon.png               # App icon for the Tizen package
+│   │   └── icon.png                   # App icon for the Tizen package
 │   └── templates/
-│       ├── config-standard.xml    # Tizen manifest for source builds
-│       ├── config-secondary.xml   # Manifest with alternate app ID
-│       ├── config-web-wrapper.xml # Manifest for web wrapper
-│       ├── config-legacy-wrapper.xml
-│       ├── index-web-wrapper.html # Hosted Stremio web app wrapper
-│       ├── index-legacy-wrapper.html
-│       └── tizen-inject.js        # TV remote handler for source builds
+│       ├── config-standard.xml        # Tizen manifest for source builds
+│       ├── config-secondary.xml       # Manifest with alternate app ID
+│       ├── config-web-wrapper.xml     # Manifest for web wrapper
+│       ├── config-legacy-wrapper.xml  # Manifest for legacy wrapper
+│       ├── index-web-wrapper.html     # Hosted Stremio web app wrapper
+│       ├── index-legacy-wrapper.html  # Legacy Stremio web app wrapper
+│       └── tizen-inject.js           # TV remote handler for source builds
 ├── patches/
-│   └── stremio-web/               # Optional .patch files applied before build
-├── matrix.json                    # Build variant definitions
-├── versions.json                  # Tracks last-built versions (auto-updated)
-├── COMPATIBILITY.md               # Community TV compatibility list
+│   └── stremio-web/                   # Optional .patch files applied before build
+├── matrix.json                        # Build matrix (auto-generated, do not edit)
+├── matrix-definition.json             # Variation definitions (secondary, wrappers)
+├── versions.json                      # Tracked versions (auto-updated by CI)
+├── package.exp                        # Expect script for Tizen CLI signing
+├── COMPATIBILITY.md                   # Community TV compatibility list
 ├── LICENSE
 └── README.md
 ```
