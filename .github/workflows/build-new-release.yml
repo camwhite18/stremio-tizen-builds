@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: Checkout to repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set Variables
         id: variables
@@ -88,7 +88,7 @@ jobs:
       - run: env
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js environment
         if: ${{ matrix.source_build == true }}
@@ -135,7 +135,7 @@ jobs:
 
       - name: Clone stremio-web
         if: ${{ matrix.source_build == true }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.repository }}
           path: 'stremio-web'
