@@ -1,0 +1,21 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+
+set app_dir [lindex $argv 0]
+set output_dir [lindex $argv 1]
+set profile_name [lindex $argv 2]
+
+cd $app_dir
+
+spawn ../tizen-studio/tools/ide/bin/tizen package -t wgt -o $output_dir -s $profile_name -- .buildResult
+
+expect "Author password:"
+
+send -- "1234\r"
+
+expect "Yes: (Y), No: (N) ?"
+
+send -- "N\r"
+
+expect eof

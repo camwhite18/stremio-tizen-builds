@@ -1,23 +1,21 @@
 {
-  "stable": {
-    "stremio_web_version": "",
-    "stremio_web_commit": "",
-    "built_at": ""
-  },
-  "main": {
-    "stremio_web_version": "",
-    "stremio_web_commit": "",
-    "built_at": ""
-  },
-  "secondary": {
-    "stremio_web_version": "",
-    "stremio_web_commit": "",
-    "built_at": ""
-  },
-  "web-wrapper": {
-    "built_at": ""
-  },
-  "legacy": {
-    "built_at": ""
-  }
+  "commits": [
+    {
+      "owner": "Stremio",
+      "repo": "stremio-web",
+      "ref": "main",
+      "name": "main",
+      "matrix": true,
+      "latest": ""
+    }
+  ],
+  "releases": [
+    {
+      "owner": "Stremio",
+      "repo": "stremio-web",
+      "latest": "",
+      "matrix": true,
+      "default": true
+    }
+  ]
 }

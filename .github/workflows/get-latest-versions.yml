@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+name: Get Latest Versions
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  getLatestVersions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for updates
+        id: updates
+        run: |
+          chmod +x scripts/check-updates.sh
+          bash scripts/check-updates.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit Updated Files
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add versions.json
+          git add matrix.json
+          git commit -m "Automated Version Update" || echo "No changes to commit"
+          git push
+
+      - name: Trigger build workflow
+        if: ${{ steps.updates.outputs.triggerBuild == 'true' }}
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: build-new-release.yml
+          inputs: '{"rawMarkdown": "${{ steps.updates.outputs.causeOfUpdateLabel }}", "webReleaseTagName": "${{ steps.updates.outputs.webReleaseTagName }}"}'

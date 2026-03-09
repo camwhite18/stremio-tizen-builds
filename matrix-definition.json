@@ -1,0 +1,27 @@
+{
+  "variations": [
+    {
+      "name": "secondary",
+      "extra_values": [
+        { "key": "secondary", "value": true },
+        { "key": "tizen_template", "value": "secondary" },
+        { "key": "app_id", "value": "StrTzBuil2.Stremio2" },
+        { "key": "package_id", "value": "StrTzBuil2" }
+      ]
+    }
+  ],
+  "wrappers": [
+    {
+      "artifact_name": "Stremio-WebWrapper",
+      "tizen_template": "web-wrapper",
+      "app_id": "StrTzWWrap.StremioWW",
+      "package_id": "StrTzWWrap"
+    },
+    {
+      "artifact_name": "Stremio-Legacy",
+      "tizen_template": "legacy-wrapper",
+      "app_id": "StrTzLegcy.StremioLg",
+      "package_id": "StrTzLegcy"
+    }
+  ]
+}
