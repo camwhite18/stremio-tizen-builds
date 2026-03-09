@@ -93,6 +93,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup pnpm
+        if: ${{ matrix.source_build == true }}
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Install Needed packages
         run: sudo apt-get install -y expect
 
@@ -136,8 +142,8 @@ jobs:
         if: ${{ matrix.source_build == true }}
         run: |
           cd stremio-web
-          npm ci --no-audit
-          npm run build
+          pnpm install --frozen-lockfile
+          pnpm run build
           echo "BUILD_DIR=$(ls -d ${GITHUB_WORKSPACE}/stremio-web/build ${GITHUB_WORKSPACE}/stremio-web/dist 2>/dev/null | head -1)" >> $GITHUB_ENV
 
       - name: Prepare Tizen app directory (source build)
